@@ -1,0 +1,19 @@
+# dbt
+target/
+dbt_packages/
+logs/
+*.log
+
+# credentials — ne jamais committer
+profiles.yml
+
+# Python
+__pycache__/
+*.py[cod]
+.env
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
