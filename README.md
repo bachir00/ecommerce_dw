@@ -18,7 +18,7 @@
 - [How to Run](#how-to-run)
 - [Data Quality Tests](#data-quality-tests)
 - [Dataset](#dataset)
-- [What I Learned](#what-i-learned)
+- [What you can Learn](#What-you-can-Learn)
 - [Author](#author)
 - [License](#license)
 
