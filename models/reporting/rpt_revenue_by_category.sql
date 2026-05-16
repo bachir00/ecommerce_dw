@@ -7,7 +7,7 @@ products AS (
 )
 
 SELECT
-    p.product_category_name,
+    COALESCE(p.product_category_name, 'uncategorized') AS product_category_name,
     COUNT(DISTINCT i.order_id)      AS total_orders,
     COUNT(i.order_item_id)          AS units_sold,
     ROUND(SUM(i.price), 2)          AS total_revenue,

@@ -186,6 +186,10 @@ The reporting layer exposes the following KPIs:
 ### Pipeline Execution
 ![dbt run](docs/screenshots/dbt_run.png)
 
+###  Dashboard Preview
+![streamlit](docs/screenshots/streamlit_dashboard.png)
+
+
 ---
 
 ## How to Run

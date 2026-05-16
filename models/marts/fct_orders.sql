@@ -16,15 +16,20 @@ items AS (
 payments AS (
     SELECT
         order_id,
-        payment_type,
-        payment_installments,
-        SUM(payment_value)      AS total_payment
+        MAX(payment_type)           AS payment_type,
+        MAX(payment_installments)   AS payment_installments,
+        SUM(payment_value)          AS total_payment
     FROM {{ ref('stg_payments') }}
-    GROUP BY order_id, payment_type, payment_installments
+    GROUP BY order_id
 ),
 
 reviews AS (
-    SELECT * FROM {{ ref('stg_reviews') }}
+    SELECT
+        order_id,
+        MAX(review_score)       AS review_score,
+        MAX(sentiment)          AS sentiment
+    FROM {{ ref('stg_reviews') }}
+    GROUP BY order_id
 )
 
 SELECT
@@ -36,10 +41,10 @@ SELECT
     o.order_status,
     o.delivery_days,
     o.delivered_on_time,
-    i.item_count,
-    ROUND(i.subtotal, 2)        AS subtotal,
-    ROUND(i.shipping_total, 2)  AS shipping_total,
-    ROUND(i.order_total, 2)     AS order_total,
+    COALESCE(i.item_count, 0)           AS item_count,
+    ROUND(COALESCE(i.subtotal, 0), 2)   AS subtotal,
+    ROUND(COALESCE(i.shipping_total, 0), 2) AS shipping_total,
+    ROUND(COALESCE(i.order_total, 0), 2)    AS order_total,
     p.payment_type,
     p.payment_installments,
     r.review_score,
