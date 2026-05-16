@@ -1,23 +1,22 @@
-{{ config(materialized='table') }}
-
-with date_spine as (
-    {{ dbt_utils.date_spine(
-        datepart   = "day",
-        start_date = "cast('2020-01-01' as date)",
-        end_date   = "cast('2030-12-31' as date)"
-    ) }}
+WITH date_spine AS (
+    SELECT
+        DATEADD('day', ROW_NUMBER() OVER (ORDER BY SEQ4()) - 1,
+            '2016-01-01'::DATE) AS date_day
+    FROM TABLE(GENERATOR(ROWCOUNT => 1500))
 )
 
-select
-    cast(date_day as date)              as date_id,
-    date_day                            as full_date,
-    extract(year  from date_day)        as year,
-    extract(quarter from date_day)      as quarter,
-    extract(month from date_day)        as month,
-    to_char(date_day, 'Month')          as month_name,
-    extract(week  from date_day)        as week_of_year,
-    extract(day   from date_day)        as day_of_month,
-    extract(dow   from date_day)        as day_of_week,
-    to_char(date_day, 'Day')            as day_name,
-    case when extract(dow from date_day) in (0, 6) then true else false end as is_weekend
-from date_spine
+SELECT
+    date_day,
+    YEAR(date_day)                  AS year,
+    MONTH(date_day)                 AS month,
+    DAY(date_day)                   AS day,
+    QUARTER(date_day)               AS quarter,
+    DAYOFWEEK(date_day)             AS day_of_week,
+    DAYNAME(date_day)               AS day_name,
+    MONTHNAME(date_day)             AS month_name,
+    TO_CHAR(date_day, 'YYYY-MM')    AS year_month,
+    CASE
+        WHEN DAYOFWEEK(date_day) IN (0, 6) THEN TRUE
+        ELSE FALSE
+    END                             AS is_weekend
+FROM date_spine

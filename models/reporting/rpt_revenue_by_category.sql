@@ -1,16 +1,19 @@
-with order_items as (
-    select * from {{ ref('fct_order_items') }}
+WITH items AS (
+    SELECT * FROM {{ ref('stg_order_items') }}
+),
+
+products AS (
+    SELECT * FROM {{ ref('dim_products') }}
 )
 
-select
-    date_trunc('month', ordered_at)     as month,
-    category,
-    brand,
-    count(distinct order_id)            as nb_orders,
-    sum(quantity)                       as units_sold,
-    round(sum(line_total)::numeric, 2)  as gross_revenue,
-    round(sum(line_margin)::numeric, 2) as gross_margin
-from order_items
-where status != 'cancelled'
-group by 1, 2, 3
-order by 1 desc, gross_revenue desc
+SELECT
+    p.product_category_name,
+    COUNT(DISTINCT i.order_id)      AS total_orders,
+    COUNT(i.order_item_id)          AS units_sold,
+    ROUND(SUM(i.price), 2)          AS total_revenue,
+    ROUND(AVG(i.price), 2)          AS avg_price,
+    ROUND(SUM(i.freight_value), 2)  AS total_shipping
+FROM items i
+JOIN products p ON i.product_id = p.product_id
+GROUP BY 1
+ORDER BY total_revenue DESC

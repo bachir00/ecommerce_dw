@@ -1,43 +1,25 @@
-with orders as (
-    select * from {{ ref('fct_orders') }}
+WITH orders AS (
+    SELECT * FROM {{ ref('fct_orders') }}
 ),
 
-customers as (
-    select * from {{ ref('dim_customers') }}
+dates AS (
+    SELECT * FROM {{ ref('dim_date') }}
 )
 
-select
-    date_trunc('month', ordered_at)             as month,
-
-    -- volume
-    count(distinct order_id)                    as total_orders,
-    count(distinct customer_id)                 as active_customers,
-    sum(total_items)                            as units_sold,
-
-    -- revenue
-    round(sum(gross_revenue)::numeric, 2)       as gross_revenue,
-    round(sum(total_paid)::numeric, 2)          as net_revenue,
-    round(avg(gross_revenue)::numeric, 2)       as avg_order_value,
-
-    -- new vs returning
-    count(distinct case
-        when date_trunc('month', ordered_at) = date_trunc('month', customers.first_order_at)
-        then orders.customer_id
-    end)                                        as new_customers,
-
-    count(distinct case
-        when date_trunc('month', ordered_at) > date_trunc('month', customers.first_order_at)
-        then orders.customer_id
-    end)                                        as returning_customers,
-
-    -- quality
-    round(
-        100.0 * count(case when status = 'cancelled' then 1 end)
-        / nullif(count(*), 0), 2
-    )                                           as cancellation_rate_pct
-
-from orders
-left join customers using (customer_id)
-where orders.ordered_at is not null
-group by 1
-order by 1 desc
+SELECT
+    d.year_month,
+    d.year,
+    d.month,
+    COUNT(DISTINCT o.order_id)          AS total_orders,
+    COUNT(DISTINCT o.customer_id)       AS unique_customers,
+    ROUND(SUM(o.order_total), 2)        AS total_revenue,
+    ROUND(AVG(o.order_total), 2)        AS avg_order_value,
+    ROUND(AVG(o.review_score), 2)       AS avg_review_score,
+    ROUND(AVG(o.delivery_days), 1)      AS avg_delivery_days,
+    SUM(CASE WHEN o.delivered_on_time
+        THEN 1 ELSE 0 END)
+        * 100.0 / COUNT(*)              AS on_time_delivery_rate
+FROM dates d
+JOIN orders o ON d.date_day = o.order_date
+GROUP BY 1, 2, 3
+ORDER BY 1

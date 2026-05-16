@@ -1,16 +1,11 @@
-with source as (
-    select * from {{ source('ecommerce', 'customers') }}
-),
-
-renamed as (
-    select
-        customer_id,
-        first_name,
-        last_name,
-        email,
-        country,
-        created_at::timestamp as registered_at
-    from source
+WITH source AS (
+    SELECT * FROM {{ source('raw', 'customers') }}
 )
 
-select * from renamed
+SELECT
+    customer_id,
+    customer_unique_id,
+    customer_zip_code_prefix,
+    customer_city,
+    customer_state
+FROM source

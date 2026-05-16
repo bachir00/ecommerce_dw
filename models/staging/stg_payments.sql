@@ -1,16 +1,11 @@
-with source as (
-    select * from {{ source('ecommerce', 'payments') }}
-),
-
-renamed as (
-    select
-        payment_id,
-        order_id,
-        payment_method,
-        amount,
-        status,
-        paid_at::timestamp as paid_at
-    from source
+WITH source AS (
+    SELECT * FROM {{ source('raw', 'payments') }}
 )
 
-select * from renamed
+SELECT
+    ORDER_ID                        AS order_id,
+    PAYMENT_SEQUENTIAL              AS payment_sequential,
+    PAYMENT_TYPE                    AS payment_type,
+    PAYMENT_INSTALLMENTS            AS payment_installments,
+    PAYMENT_VALUE                   AS payment_value
+FROM source

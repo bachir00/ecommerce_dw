@@ -1,26 +1,33 @@
-with customers as (
-    select * from {{ ref('stg_customers') }}
+WITH customers AS (
+    SELECT * FROM {{ ref('stg_customers') }}
 ),
 
-orders as (
-    select
+orders AS (
+    SELECT
         customer_id,
-        min(ordered_at) as first_order_at,
-        max(ordered_at) as last_order_at,
-        count(order_id)  as total_orders
-    from {{ ref('stg_orders') }}
-    group by customer_id
+        COUNT(*)            AS total_orders,
+        MIN(order_date)     AS first_order_date,
+        MAX(order_date)     AS last_order_date
+    FROM {{ ref('stg_orders') }}
+    GROUP BY 1
 )
 
-select
-    customers.customer_id,
-    customers.first_name,
-    customers.last_name,
-    customers.email,
-    customers.country,
-    customers.registered_at,
-    orders.first_order_at,
-    orders.last_order_at,
-    coalesce(orders.total_orders, 0) as total_orders
-from customers
-left join orders using (customer_id)
+SELECT
+    c.customer_id,
+    c.customer_unique_id,
+    c.customer_city,
+    c.customer_state,
+    o.total_orders,
+    o.first_order_date,
+    o.last_order_date,
+    DATEDIFF('day',
+        o.first_order_date,
+        o.last_order_date
+    )                       AS customer_lifetime_days,
+    CASE
+        WHEN o.total_orders = 1  THEN 'one_time'
+        WHEN o.total_orders <= 3 THEN 'occasional'
+        ELSE 'loyal'
+    END                     AS customer_segment
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id

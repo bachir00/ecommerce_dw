@@ -1,16 +1,14 @@
-with source as (
-    select * from {{ source('ecommerce', 'order_items') }}
-),
-
-renamed as (
-    select
-        order_item_id,
-        order_id,
-        product_id,
-        quantity,
-        unit_price,
-        quantity * unit_price as line_total
-    from source
+WITH source AS (
+    SELECT * FROM {{ source('raw', 'order_items') }}
 )
 
-select * from renamed
+SELECT
+    ORDER_ID                        AS order_id,
+    ORDER_ITEM_ID                   AS order_item_id,
+    PRODUCT_ID                      AS product_id,
+    SELLER_ID                       AS seller_id,
+    SHIPPING_LIMIT_DATE             AS shipping_limit_date,
+    PRICE                           AS price,
+    FREIGHT_VALUE                   AS freight_value,
+    PRICE + FREIGHT_VALUE           AS total_item_value
+FROM source

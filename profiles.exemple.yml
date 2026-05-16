@@ -1,0 +1,13 @@
+ecommerce_dw:
+  outputs:
+    dev:
+      account: your_num_snowfalke
+      database: ECOMMERCE_DW
+      password: your_passwd
+      role: your_dbt_roole
+      schema: your_schema
+      threads: 4
+      type: snowflake
+      user: your_dbt_user
+      warehouse: your_dw
+  target: dev

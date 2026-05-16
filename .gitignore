@@ -10,8 +10,11 @@ profiles.yml
 # Python
 __pycache__/
 *.py[cod]
+*.zip
+/data
 .env
-venv/
+*.key
+dbt_env/
 .venv/
 
 # OS
