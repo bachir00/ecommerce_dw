@@ -183,11 +183,12 @@ The reporting layer exposes the following KPIs:
 ### Snowflake — Table Preview
 ![snowflake](docs/screenshots/snowflake.png)
 
+###  Dashboard Preview
+![streamlit](docs/screenshots/streamlit_dashboard.png)
+
 ### Pipeline Execution
 ![dbt run](docs/screenshots/dbt_run.png)
 
-###  Dashboard Preview
-![streamlit](docs/screenshots/streamlit_dashboard.png)
 
 
 ---
