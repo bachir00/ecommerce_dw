@@ -291,7 +291,7 @@ dbt tests enforce data reliability at every layer:
 
 ---
 
-## What I Learned
+## What you can Learn
 
 - Designing a **star schema** dimensional model from raw transactional data
 - Building **modular, layered dbt models** following the staging → marts → reporting pattern
